@@ -972,7 +972,7 @@
                       var completed = false;
 
                       ref.addEventListener('loadstart', function(event) {
-                          if (event.url.indexOf('http://localhost') == 0) {
+                          if (event.url.indexOf('http://10.5.5.3') == 0) {
                               var callback = parseCallback(event.url);
                               processCallback(callback, promise);
                               ref.close();
@@ -982,7 +982,7 @@
 
                       ref.addEventListener('loaderror', function(event) {
                           if (!completed) {
-                              if (event.url.indexOf('http://localhost') == 0) {
+                              if (event.url.indexOf('http://10.5.5.3') == 0) {
                                   var callback = parseCallback(event.url);
                                   processCallback(callback, promise);
                                   ref.close();
@@ -1006,13 +1006,13 @@
                       var error;
 
                       ref.addEventListener('loadstart', function(event) {
-                          if (event.url.indexOf('http://localhost') == 0) {
+                          if (event.url.indexOf('http://10.5.5.3') == 0) {
                               ref.close();
                           }
                       });
 
                       ref.addEventListener('loaderror', function(event) {
-                          if (event.url.indexOf('http://localhost') == 0) {
+                          if (event.url.indexOf('http://10.5.5.3') == 0) {
                               ref.close();
                           } else {
                               error = true;
@@ -1036,7 +1036,7 @@
                       var registerUrl = kc.createRegisterUrl();
                       var ref = cordovaOpenWindowWrapper(registerUrl, '_blank', 'location=no');
                       ref.addEventListener('loadstart', function(event) {
-                          if (event.url.indexOf('http://localhost') == 0) {
+                          if (event.url.indexOf('http://10.5.5.3') == 0) {
                               ref.close();
                           }
                       });
@@ -1046,14 +1046,14 @@
                       var accountUrl = kc.createAccountUrl();
                       var ref = cordovaOpenWindowWrapper(accountUrl, '_blank', 'location=no');
                       ref.addEventListener('loadstart', function(event) {
-                          if (event.url.indexOf('http://localhost') == 0) {
+                          if (event.url.indexOf('http://10.5.5.3') == 0) {
                               ref.close();
                           }
                       });
                   },
 
                   redirectUri: function(options) {
-                      return 'http://localhost';
+                      return 'http://10.5.5.3';
                   }
               }
           }

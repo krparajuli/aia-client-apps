@@ -2,30 +2,78 @@
   <head>
     <title>Test Application</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="http://10.5.5.2:8000/bootstrap.min.css">
     <script src="keycloak.js"></script>
   </head>
 
   <body>
     <div class="container">
       <hr>
-      <h2>Welcome to this Keycloak Test Application</h3>
+      <h2>Student Dashboard</h3>
 
-      <p>Use the button below to initiate a login flow.</p>
+
       <button onclick="doLogin()" type="button" class="btn btn-primary">Login</button>
       <button onclick="doLogout()" type="button" class="btn btn-danger">Logout</button>
-      <button onclick="testApiAccess()" type="button" class="btn btn-info">Test API Access</button>
-
+      <button onclick="fetchMarks()" type="button" class="btn btn-info">Fetch Marks</button>
+      <button onclick="showToken()" type="button" class="btn btn-info">Show Token</button>
       <br>
       <br>
-
-      <h4>KeyCloak Token</h4>
-      <pre id="kc-token-raw"></pre>
-
-      <h4>KeyCloak Token Data</h4>
-      <pre id="kc-token-data"></pre>
+      <div id="login-view" style="display:none">
+      <h5 id="login-view-text"></h5>
+      <br>
+      <br>
+      </div>
+      <div id="marks" style="display:none">
+      <h4>Student Marks from Third Party Database</h4>
+      <pre id="student_marks"></pre>
+      <table class="table">
+	<thead>
+		<tr>
+			<th scope="col">Username</th>
+			<th scope="col">Name</th>			
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<td id="muser">1</td>
+			<td id="mname">2</td>
+		</tr>
+	</tbody>
+      </table>
+      <em>MARKS</em>
+       <table class="table">
+	<thead>
+		<tr>
+			<th scope="col">AIA</th>
+			<th scope="col">ICS</th>
+			<th scope="col">IIS</th>
+			<th scope="col">Network Forensics</th>
+			<th scope="col">QPA</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<td id="maia">2</td>
+			<td id="mics">3</td>
+			<td id="miis">4</td>
+			<td id="mnfor">5</td>
+			<td id="mqpa">6</td>
+			
+		</tr>
+	</tbody>
+      </table>
+                                                                              
+      </div>
     </div>
 
+     <div id="token-view" style="display:none">
+      <h4>KeyCloak Token</h4>
+      <pre id="kc-token-raw"></pre>
+	
+      <h4>KeyCloak Token Data</h4>
+      <pre id="kc-token-data"></pre>
+      <br>
+      </div>
     <script>
       var kc = Keycloak();
 
@@ -42,27 +90,61 @@
         var parsedEl = document.getElementById('kc-token-data')
 
         if (kc.token) {
+          
           rawEl.innerHTML = kc.token
           parsedEl.innerHTML = JSON.stringify(kc.tokenParsed, null, 2)
+          var login = document.getElementById('login-view');
+          login.style.display = "block"
+          var login_text = document.getElementById('login-view-text');
+          login_text.innerHTML = "You are now logged in as <i>" + kc.tokenParsed['preferred_username'] + "</i>.<br>Marks can be fetched from a third party website using the Fetch marks Button. The Show token button shows the token used to communicate details about the authorization between the websites"
         } else {
           rawEl.innerHTML = 'Please login to display raw token.'
           parsedEl.innerHTML = 'Please login to display token data.'
         }
 
       }, 1000)
+      
+      function showToken () {
+      var token = document.getElementById('token-view');
+      var marks_div = document.getElementById('marks');
+      marks_div.style.display = "none"
+      token.style.display = "block"
+      }
+      
 
-      function testApiAccess () {
-        var url = 'http://localhost:3030/ping-protected'
+      function fetchMarks () {
+      var url = 'http://10.5.5.5:5000/v2/'
 
         var req = new XMLHttpRequest()
-
         req.open('GET', url, true)
-        req.setRequestHeader('authorization', 'Bearer ' + kc.token)
+        req.setRequestHeader('Authorization', 'Bearer ' + kc.token)
 
         req.onreadystatechange = function () {
           if (req.readyState === 4) {
             if (req.status === 200) {
-              alert('xhr success')
+             var marks_div = document.getElementById('marks');
+              var token = document.getElementById('token-view');
+              token.style.display = "none"
+      		marks_div.style.display = "block"
+      		console.log(req)
+              resp = JSON.parse(req.response);
+              console.log(resp)
+              var mname = document.getElementById('mname');
+              var mics = document.getElementById('mics');
+              var maia = document.getElementById('maia');
+              var miis = document.getElementById('miis');
+              var mnfor = document.getElementById('mnfor');
+              var mqpa = document.getElementById('mqpa');
+              var muser = document.getElementById('muser');
+              mname.innerText = resp['students_name'];
+              muser.innerHTML = resp['students_username'];
+              maia.innerHTML = resp['students_grade_aia'];
+              mics.innerHTML = resp['students_grade_ics'];
+              miis.innerHTML = resp['students_grade_iis'];
+              mqpa.innerHTML = resp['students_qpa'];
+              mnfor.innerHTML = resp['students_grade_net_4nsics'];
+			
+              
             } else {
               alert('xhr failed with status code: ' + req.status + '. you\'re probably not logged in')
             }
@@ -72,19 +154,28 @@
         req.send()
       }
 
+
+	     
+
+
       function doLogout () {
         if (!kc.token) {
           alert('not logged in, so we cannot logout')
         } else {
           kc.logout()
+       
         }
       }
 
       function doLogin () {
         if (kc.token) {
           alert('already logged in')
+          
         } else {
+          
           kc.login()
+          
+          
         }
       }
     </script>
