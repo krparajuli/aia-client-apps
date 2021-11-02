@@ -1,0 +1,13 @@
+{
+  "realm": "WebApp",
+  "auth-server-url": "http://10.5.5.3:8080/auth/",
+  "ssl-required": "external",
+  "resource": "resource",
+  "verify-token-audience": true,
+  "credentials": {
+    "secret": "c7222187-ffa5-4c14-8edd-7fe82126a943"
+  },
+  "use-resource-role-mappings": true,
+  "confidential-port": 0,
+  "policy-enforcer": {}
+}
